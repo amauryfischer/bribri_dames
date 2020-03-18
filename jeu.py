@@ -11,6 +11,41 @@ from joueur import Humain  # , IA
 from utils import *
 # le cas ou il s'agit d'une dame
 
+
+def tour_joueur(joueur, plateau, joueur_title, numero_joueur):
+    etat = "joue encore"
+    while etat == "joue encore":
+        print(" ")
+        print(joueur_title + ", à vous de jouer. Votre score est de ",
+              joueur.score, ".")
+        print(" ")
+        jeu = joueur.joue()
+
+        current_tour = joueur.unTour(jeu[0], jeu[1], jeu[2], jeu[3], plateau)
+
+        while current_tour["status"] == "pb":
+            jeu = joueur.joue()
+            plt.affichage(plateau)
+
+        pion = Pion(jeu[0], jeu[1], jeu[2], jeu[3], numero_joueur)
+
+        if current_tour["status"] == "je me deplace":
+            plateau = pion.bouger(plateau)
+            etat = "fin du tour"
+
+        elif current_tour["status"] == "je mange":
+            plateau = pion.manger(plateau, current_tour["direction"])
+            joueur.gagne()
+
+        else:
+            display_message("relance", "red")
+
+        if pion.check_dame():
+            plateau = pion.devient_dame(plateau)
+
+        plt.affichage(plateau)
+
+
 if __name__ == "__main__":
     display_begining()
     display_message("Bienvenue sur le meilleur jeu qui existe.")
@@ -27,55 +62,8 @@ if __name__ == "__main__":
     plt.affichage(plateau)
 
     while j1.score < 20 or j2.score < 20:
-        etat = "joue encore"
-        while etat == "joue encore":
-            print(" ")
-            print("Joueur 1, à vous de jouer. Votre score est de ", j1.score, ".")
-            print(" ")
-            jeu = j1.joue()
-
-            while j1.unTour(jeu[0], jeu[1], jeu[2], jeu[3], plateau) == "pb":
-                jeu = j1.joue()
-                plt.affichage(plateau)
-
-            pion = Pion(jeu[0], jeu[1], jeu[2], jeu[3], 1)
-
-            if j1.unTour(jeu[0], jeu[1], jeu[2], jeu[3], plateau) == "je me deplace":
-                plateau = pion.bouger(plateau)
-                etat = "fin du tour"
-
-            else:
-                plateau = pion.manger(plateau)
-                j1.gagne()
-
-            if pion.check_dame():
-                plateau = pion.devient_dame(plateau)
-
-            plt.affichage(plateau)
-
-        etat = "joue encore"
-        while etat == "joue encore":
-            print(" ")
-            print("Joueur 2, à vous de jouer. Votre score est ", j2.score, ".")
-            print(" ")
-            jeu = j2.joue()
-
-            while j2.unTour(jeu[0], jeu[1], jeu[2], jeu[3], plateau) == 0:
-                jeu = j2.joue()
-                plt.affichage(plateau)
-
-            pion = Pion(jeu[0], jeu[1], jeu[2], jeu[3], 2)
-
-            if j2.unTour(jeu[0], jeu[1], jeu[2], jeu[3], plateau) == 1:
-                plateau = pion.bouger(plateau)
-                etat = "fin du tour"
-            else:
-                plateau = pion.manger(plateau)
-                j2.gagne()
-
-            if pion.check_dame():
-                plateau = pion.devient_dame(plateau)
-            plt.affichage(plateau)
+        tour_joueur(j1, plateau, "Joueur 1", 1)
+        tour_joueur(j2, plateau, "Joueur 2", 2)
 
     print(" ")
     if j1.score < j2.score:

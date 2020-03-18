@@ -28,32 +28,32 @@ class Pion(Piece):
         plateau[self.k][self.l] = self.numero_joueur
         return plateau
 
-    def manger(self, plateau):
+    def manger(self, plateau, direction):
         if self.numero_joueur == 1:
             numero_adversaire = 2
         else:
             numero_adversaire = 1
 
         # pion en bas à droite
-        if (self.k == self.i+2 and self.l == self.j+2) and int(plateau[self.i+1][self.j+1]) == numero_adversaire:
+        if direction == "en bas a droite":
             plateau[self.i+2][self.j+2] = self.numero_joueur
             plateau[self.i+1][self.j+1] = 0
             plateau[self.i][self.j] = 0
             return plateau
-        # pion en bas à gauche
-        elif (self.k == self.i+2 and self.l == self.j-2) and int(plateau[self.i+1][self.j-1]) == numero_adversaire:
+            # pion en bas à gauche
+        elif direction == "en bas a gauche":
             plateau[self.i+2][self.j-2] = self.numero_joueur
             plateau[self.i+1][self.j-1] = 0
             plateau[self.i][self.j] = 0
             return plateau
         # pion en haut à droite
-        elif (self.k == self.i-2 and self.l == self.j+2) and int(plateau[self.i-1][self.j+1]) == numero_adversaire:
+        elif direction == "en haut a droite":
             plateau[self.i-2][self.j+2] = self.numero_joueur
             plateau[self.i-1][self.j+1] = 0
             plateau[self.i][self.j] = 0
             return plateau
         # pion en haut à gauche
-        elif (self.k == self.i-2 and self.l == self.j-2) and int(plateau[self.i-1][self.j-1]) == numero_adversaire:
+        elif direction == "en haut a gauche":
             plateau[self.i-2][self.j-2] = self.numero_joueur
             plateau[self.i-1][self.j-1] = 0
             plateau[self.i][self.j] = 0
