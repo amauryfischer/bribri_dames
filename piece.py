@@ -5,72 +5,77 @@ Created on Sat Mar 14 09:50:58 2020
 @author: Ambre
 """
 
-# s'occuper des messages d'erreurs
-# s'occuper des dames
-
 
 class Piece():
-    def __init__(self, ligne_depart, colonne_depart, ligne_destination, colonne_destination, numero_joueur):
-        self.i = ligne_depart - 1
-        self.j = colonne_depart - 1
-        self.k = ligne_destination - 1
-        self.l = colonne_destination - 1
-        self.numero_joueur = numero_joueur
+    def __init__(self, start_row, start_column, target_row, target_column,player_number):
+        self.s_row = start_row - 1
+        self.s_column = start_column - 1
+        self.t_row = target_row - 1
+        self.t_column = target_column - 1
+        self.player_number = player_number
+        
+    #Déplacement d'une pièce
+    def move(self, gameboard):
+        gameboard[self.s_row][self.s_column]=0
+        gameboard[self.t_row][self.t_column] = self.player_number
+        
+        return gameboard
+    
+    
+class Checker(Piece):
+    def __init__(self,start_row, start_column, target_row, target_column,player_number):
+        super().__init__(start_row, start_column, target_row, target_column,player_number)
+   
 
-
-class Pion(Piece):
-    def __init__(self, ligne_depart, colonne_depart, ligne_destination, colonne_destination, numero_joueur):
-        super().__init__(ligne_depart, colonne_depart,
-                         ligne_destination, colonne_destination, numero_joueur)
-
-    def bouger(self, plateau):
-        plateau[self.i][self.j] = 0
-        plateau[self.k][self.l] = self.numero_joueur
-        return plateau
-
-    def manger(self, plateau, direction):
-        if self.numero_joueur == 1:
-            numero_adversaire = 2
+    
+    #Effacement du pion adverse
+    def capture(self, gameboard, make_a_move):
+        if make_a_move["target"] == "right - down":
+            gameboard[self.s_row+1][self.t_column+1] = 0
+        elif make_a_move["target"] == "left - down":
+            gameboard[self.t_row+1][self.t_column-1] = 0
+        elif make_a_move["target"] == "right - up":
+            gameboard[self.t_row-1][self.t_column+1] = 0
         else:
-            numero_adversaire = 1
+            gameboard[self.t_row-1][self.t_column-1] = 0
+                
+        return gameboard
 
-        # pion en bas à droite
-        if direction == "en bas a droite":
-            plateau[self.i+2][self.j+2] = self.numero_joueur
-            plateau[self.i+1][self.j+1] = 0
-            plateau[self.i][self.j] = 0
-            return plateau
-            # pion en bas à gauche
-        elif direction == "en bas a gauche":
-            plateau[self.i+2][self.j-2] = self.numero_joueur
-            plateau[self.i+1][self.j-1] = 0
-            plateau[self.i][self.j] = 0
-            return plateau
-        # pion en haut à droite
-        elif direction == "en haut a droite":
-            plateau[self.i-2][self.j+2] = self.numero_joueur
-            plateau[self.i-1][self.j+1] = 0
-            plateau[self.i][self.j] = 0
-            return plateau
-        # pion en haut à gauche
-        elif direction == "en haut a gauche":
-            plateau[self.i-2][self.j-2] = self.numero_joueur
-            plateau[self.i-1][self.j-1] = 0
-            plateau[self.i][self.j] = 0
-            return plateau
-
-    def check_dame(self):
-        if (self.numero_joueur == 1 and self.k == 9) or (self.numero_joueur == 2 and self.k == 0):
+    
+    def check_king(self):
+        #Si le joueur 1 arrive tout en bas
+        if self.player_number == 1 and self.t_row == 9:
             return True
+        #Si le joueur 2 arrive tout en haut
+        elif self.player_number == 2 and self.t_row == 0:
+            return True
+        
         else:
             return False
+        
+                
+    def become_king(self,gameboard):
+        #Modification du pion du joueur 1 en dame
+        if int(gameboard[self.t_row][self.t_column]) == 1:
+            gameboard[self.t_row][self.t_column] = 1.5
+        #Modification du pion du joueur 2 en dame
+        elif int(gameboard[self.t_row][self.t_column]) == 2:
+            gameboard[self.t_row][self.t_column] = 2.5 
+            
+        return gameboard    
 
-    def devient_dame(self, plateau):
-        if int(plateau[self.k][self.l]) == 1:
-            plateau[self.k][self.l] = 1.5
-        elif int(plateau[self.k][self.l]) == 2:
-            plateau[self.k][self.l] = 2.5
-        return plateau
 
-
-# class Dame(Piece):
+class King(Piece):
+    '''La dame peut aller d'avant en arrière et peut se déplacer 
+        d'autant de cases qu'elle le désire.'''
+    def __init__(self,start_row, start_column, target_row, target_column,player_number):
+        super().__init__(start_row, start_column, target_row, target_column,player_number)
+        
+    #Effacement du pion adverse    
+    def capture(self, gameboard, make_a_move):
+        opponent_row = make_a_move[opponent_row]
+        opponent_column = make_a_move[opponent_col]
+        gameboard[opponent_row][opponent_col] = 0
+                
+        return gameboard
+        
